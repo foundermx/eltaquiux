@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+/* tablet: hero grande solo en tablets de verdad (no en un celular acostado, que es ancho pero bajito).
+   short: PC con poca altura (laptop HD con barras del navegador): la barra lateral se compacta. */
+@custom-variant tablet (@media (min-width: 48rem) and (max-width: 63.98rem) and (min-height: 40rem));
+@custom-variant short (@media (min-width: 64rem) and (max-height: 44rem));
+
+/*
+ * Tokens de marca medidos del mockup. Rojo y naranja van apenas más oscuros que el
+ * original (#F50A0A, #D26A26) para pasar WCAG AA. Se borra la paleta de Tailwind:
+ * los componentes solo pueden usar estos colores.
+ */
+@theme {
+  --color-*: initial;
+  --color-red: #e00b0b;
+  --color-yellow: #fcc72a;
+  --color-green: #14541b;
+  --color-orange: #b4520f;
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #262626;
+  --color-paper: #fdfdfd;
+  --color-line: #d9d9d9;
+  --color-shadow: #555555;
+  --color-white: #ffffff;
+
+  --text-hero: 3.5rem;
+  --text-hero--line-height: 0.85;
+
+  --radius-btn: 0.875rem;
+  --radius-card: 1.25rem;
+
+  --shadow-sticker: 4px 4px 0 var(--color-yellow);
+  --shadow-sticker-pressed: 2px 2px 0 var(--color-yellow);
+  --shadow-bar: 0 6px 20px rgb(0 0 0 / 0.1);
+
+  --text-shadow-sticker: 3px 3px 0 var(--color-yellow);
+  --text-shadow-hard: 1.5px 1.5px 0 var(--color-shadow);
+
+  /* Tiempos y curvas: vienen de lib/motion.ts (variables --motion-* en <html>). Solo transform y opacity. */
+  --animate-pop: pop var(--motion-slow) var(--motion-ease-pop) both;
+  --animate-shoot: shoot var(--motion-base) var(--motion-ease-out) both;
+  --animate-run-in: run-in var(--motion-slow) var(--motion-ease-out) both;
+  --animate-jog: jog var(--motion-jog) ease-in-out infinite;
+  --animate-twinkle: twinkle var(--motion-twinkle) ease-in-out infinite;
+
+  @keyframes pop {
+    from { transform: scale(0.5) rotate(-8deg); }
+  }
+  @keyframes shoot {
+    from { transform: scaleX(0); opacity: 0; }
+  }
+  @keyframes run-in {
+    from { transform: translateX(120%) rotate(12deg); }
+  }
+  @keyframes jog {
+    50% { transform: translateY(-5px) rotate(3deg); }
+  }
+  @keyframes twinkle {
+    50% { transform: scale(0.65) rotate(25deg); }
+  }
+}
+
+/* Fuentes de next/font: las variables viven en <html> (ver app/layout.tsx) */
+@theme inline {
+  --font-display: var(--font-bangers), Impact, sans-serif;
+  --font-sans: var(--font-barlow), system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    /* Muro de ladrillo blanco: tile SVG de 128×40; el trazo #f0f0f0 son las juntas */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='40' fill='none' stroke='%23f0f0f0' stroke-width='1.5'%3E%3Cpath d='M0 .75h128M0 20.75h128M32 0v20M96 0v20M0 20v20M64 20v20M128 20v20'/%3E%3C/svg%3E");
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  /* Tailwind 4 deja los botones con el cursor normal; en PC la manita indica qué se puede tocar */
+  button:not(:disabled),
+  label:has(> input) {
+    cursor: pointer;
+  }
+
+  /* Con el detalle abierto, el menú de atrás no se desplaza */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  /* Entrada escalonada de lo primero que se ve (ver components/menu-section.tsx) */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-load] {
+      animation: rise var(--motion-base) var(--motion-ease-out) both;
+      /* tope de 12 pasos: en PC entran muchos elementos y la cascada no debe pasar de ~1 s */
+      animation-delay: calc(var(--motion-slow) + min(var(--i), 12) * var(--motion-stagger));
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}
